@@ -2,30 +2,20 @@ import Header from '@/components/shared/Header'
 import TransformationForm from '@/components/shared/TransformationForm';
 import { transformationTypes } from '@/constants'
 import { getUserById } from '@/lib/actions/user.actions';
+import { useAuth } from '@clerk/nextjs';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 
 const AddTransformationTypePage = async ({ params: { type } }: SearchParamProps) => {
-  console.log(`Accessing transformation type: ${type}`);
-  const { userId } = auth();
-  console.log(`Clerk userId: ${userId}`);
 
-  if(!userId) {
-    console.log('No userId, redirecting to sign-in');
-    redirect('/sign-in');
-  }
+  const { userId } = auth();
   
   const transformation = transformationTypes[type];
-  console.log(`Transformation: ${JSON.stringify(transformation)}`);
+
+  if (!userId) redirect('sign-in');
 
   const user = await getUserById(userId);
-  console.log(`User from database: ${JSON.stringify(user)}`);
 
-  if (!user) {
-    console.log(`User not found in database for Clerk ID: ${userId}`);
-    // Handle the case where the user is not found
-    return <div>User not found. Please try signing out and in again.</div>;
-  }
 
   return (
     <>
